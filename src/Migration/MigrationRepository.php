@@ -39,7 +39,7 @@ final class MigrationRepository
         if ($cluster) {
             return $this->client->write(
                 <<<SQL
-                CREATE TABLE IF NOT EXISTS {table} ON CLUSTER {cluster} (
+                CREATE TABLE IF NOT EXISTS {table} ON CLUSTER "{$cluster}" (
                     migration String,
                     batch UInt32,
                     applied_at DateTime DEFAULT NOW()
@@ -52,7 +52,6 @@ final class MigrationRepository
                 SQL,
                 [
                     'table' => $this->table,
-                    'cluster' => $cluster,
                 ],
             );
         }
