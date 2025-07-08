@@ -34,6 +34,29 @@ final class MigrationRepository
      */
     public function createMigrationRegistryTable(): Statement
     {
+        $cluster = config('clickhouse.cluster');
+
+        if ($cluster) {
+            return $this->client->write(
+                <<<SQL
+                CREATE TABLE IF NOT EXISTS {table} ON CLUSTER {cluster} (
+                    migration String,
+                    batch UInt32,
+                    applied_at DateTime DEFAULT NOW()
+                )
+                ENGINE = ReplicatedMergeTree(
+                    '/clickhouse/tables/{shard}/{$this->table}',
+                    '{replica}'
+                )
+                ORDER BY migration
+                SQL,
+                [
+                    'table' => $this->table,
+                    'cluster' => $cluster,
+                ],
+            );
+        }
+
         return $this->client->write(
             <<<SQL
             CREATE TABLE IF NOT EXISTS {table} (

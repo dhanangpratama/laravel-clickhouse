@@ -45,4 +45,6 @@ return [
         'table' => env('CLICKHOUSE_MIGRATION_TABLE', 'migrations'),
         'path' => database_path('clickhouse-migrations'),
     ],
+
+    'cluster' => env('CLICKHOUSE_CLUSTER', ''),
 ];
